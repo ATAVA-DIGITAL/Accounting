@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATAVA Accounting Dashboard - Mini Tally</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Manjari:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', 'Manjari', sans-serif;
+            background: radial-gradient(circle at top left, #f8fafc 0%, #f1f5f9 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800">
+
+    <!-- Header Section -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 px-6 py-4 shadow-sm">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-md shadow-indigo-600/20">
+                    <i class="fa-solid fa-chart-pie text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 tracking-tight mb-0.5">ATAVA Ledger</h1>
+                    <p class="text-xs text-slate-500 font-medium">Smart Mini Tally & Accounting Dashboard</p>
+                </div>
+            </div>
+            <div class="text-right hidden sm:block">
+                <span id="liveClock" class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200"></span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
+        
+        <!-- Status Cards Row (Overview) -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <!-- Card 1: Total Income -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Total Income (വരവ്)</p>
+                    <h3 class="text-2xl font-bold text-emerald-600">₹<span id="totalIncome">0.00</span></h3>
+                </div>
+                <div class="bg-emerald-50 text-emerald-600 p-4 rounded-xl">
+                    <i class="fa-solid fa-arrow-trend-up text-xl"></i>
+                </div>
+            </div>
+
+            <!-- Card 2: Total Expense -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Total Expense (ചെലവ്)</p>
+                    <h3 class="text-2xl font-bold text-rose-600">₹<span id="totalExpense">0.00</span></h3>
+                </div>
+                <div class="bg-rose-50 text-rose-600 p-4 rounded-xl">
+                    <i class="fa-solid fa-arrow-trend-down text-xl"></i>
+                </div>
+            </div>
+
+            <!-- Card 3: Net Balance -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Net Balance (ബാക്കി തുക)</p>
+                    <h3 class="text-2xl font-bold text-indigo-600">₹<span id="netBalance">0.00</span></h3>
+                </div>
+                <div class="bg-indigo-50 text-indigo-600 p-4 rounded-xl">
+                    <i class="fa-solid fa-wallet text-xl"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Workspace Panel -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left Side: Transaction Form -->
+            <div class="lg:col-span-4 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm h-fit space-y-4">
+                <h2 class="text-base font-bold text-slate-800 flex items-center gap-2 mb-2">
+                    <i class="fa-solid fa-circle-plus text-indigo-600"></i> New Entry (പുതിയ കണക്ക്)
+                </h2>
+
+                <form id="transactionForm" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Date (തീയതി)</label>
+                        <input type="date" id="txDate" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none text-sm font-medium text-slate-700">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Entry Type (ഇനം)</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="border border-slate-200 rounded-xl p-2.5 flex items-center justify-center gap-2 cursor-pointer bg-slate-50 has-[:checked]:bg-emerald-50 has-[:checked]:border-emerald-500 font-semibold text-sm text-slate-600 has-[:checked]:text-emerald-700 transition-all">
+                                <input type="radio" name="txType" value="income" checked class="accent-emerald-600"> Income (വരവ്)
+                            </label>
+                            <label class="border border-slate-200 rounded-xl p-2.5 flex items-center justify-center gap-2 cursor-pointer bg-slate-50 has-[:checked]:bg-rose-50 has-[:checked]:border-rose-500 font-semibold text-sm text-slate-600 has-[:checked]:text-rose-700 transition-all">
+                                <input type="radio" name="txType" value="expense" class="accent-rose-600"> Expense (ചെലവ്)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Particulars / Description (വിവരണം)</label>
+                        <input type="text" id="txDesc" placeholder="e.g., Typing Service Charge, Rent..." required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none text-sm font-medium text-slate-700">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Amount (തുക)</label>
+                        <div class="relative flex items-center">
+                            <span class="absolute left-3 text-slate-400 text-sm font-bold">₹</span>
+                            <input type="number" id="txAmount" min="0.01" step="0.01" placeholder="0.00" required class="w-full pl-7 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none text-sm font-bold text-slate-700">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md shadow-indigo-600/10 transition-all text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-check"></i> Save Transaction
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right Side: Ledger Table -->
+            <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col">
+                <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                    <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-indigo-600"></i> Account Book (കണക്കു പുസ്തകം)
+                    </h2>
+                    <button onclick="clearAllTransactions()" class="text-xs font-bold text-rose-500 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-lg transition-all">
+                        <i class="fa-solid fa-trash-can mr-1"></i> Clear Ledger
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto flex-1 border border-slate-100 rounded-xl">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-slate-500 font-semibold uppercase text-xs border-b border-slate-100">
+                            <tr>
+                                <th class="px-4 py-3">Date</th>
+                                <th class="px-4 py-3">Particulars</th>
+                                <th class="px-4 py-3 text-right">Income (₹)</th>
+                                <th class="px-4 py-3 text-right">Expense (₹)</th>
+                                <th class="px-4 py-3 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledgerBody" class="divide-y divide-slate-100 text-slate-700 font-medium">
+                            <!-- Dynamic rows will inject here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Company Footer Sticker -->
+        <footer class="bg-slate-900 text-slate-400 text-center py-4 px-6 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shadow-md">
+            <div>Developed & Powered by <strong class="text-white tracking-wide">ATAVA DIGITAL SERVICES & TRADING</strong></div>
+            <div class="text-indigo-400 font-semibold flex items-center gap-1">
+                <i class="fa-solid fa-shield-halved"></i> Secure Local Accounting Engine
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        // State Management
+        let transactions = JSON.parse(localStorage.getItem('atava_transactions')) || [];
+
+        // App Initializer
+        window.addEventListener('DOMContentLoaded', () => {
+            // Set default date in input to Today
+            document.getElementById('txDate').valueAsDate = new Date();
+            
+            // Start Clock
+            setInterval(updateClock, 1000);
+            updateClock();
+
+            // Setup Form Listener
+            document.getElementById('transactionForm').addEventListener('submit', handleAddTransaction);
+
+            // Initial Render
+            renderDashboard();
+        });
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('liveClock').innerText = now.toLocaleString();
+        }
+
+        function handleAddTransaction(e) {
+            e.preventDefault();
+
+            const date = document.getElementById('txDate').value;
+            const type = document.querySelector('input[name="txType"]:checked').value;
+            const desc = document.getElementById('txDesc').value.trim();
+            const amount = parseFloat(document.getElementById('txAmount').value);
+
+            const newTx = {
+                id: Date.now(),
+                date,
+                type,
+                desc,
+                amount
+            };
+
+            transactions.unshift(newTx); // Add new entry on top
+            saveToStorage();
+            renderDashboard();
+
+            // Reset inputs except Date
+            document.getElementById('txDesc').value = '';
+            document.getElementById('txAmount').value = '';
+        }
+
+        function deleteTransaction(id) {
+            transactions = transactions.filter(tx => tx.id !== id);
+            saveToStorage();
+            renderDashboard();
+        }
+
+        function clearAllTransactions() {
+            if(confirm("ഈ അക്കൗണ്ട് ബുക്കിലെ മുഴുവൻ കണക്കുകളും ഡിലീറ്റ് ചെയ്യണം എന്ന് ഉറപ്പാണോ?")) {
+                transactions = [];
+                saveToStorage();
+                renderDashboard();
+            }
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('atava_transactions', JSON.stringify(transactions));
+        }
+
+        function renderDashboard() {
+            let totalIn = 0;
+            let totalOut = 0;
+            const tbody = document.getElementById('ledgerBody');
+            tbody.innerHTML = '';
+
+            if (transactions.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-4 py-8 text-center text-slate-400 italic">
+                            No entries found. കണക്കുകൾ ഒന്നും രേഖപ്പെടുത്തിയിട്ടില്ല!
+                        </td>
+                    </tr>
+                `;
+            } else {
+                transactions.forEach(tx => {
+                    const isIncome = tx.type === 'income';
+                    if (isIncome) totalIn += tx.amount;
+                    else totalOut += tx.amount;
+
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-slate-50/80 transition-colors";
+                    row.innerHTML = `
+                        <td class="px-4 py-3 whitespace-nowrap text-xs text-slate-500">${formatDate(tx.date)}</td>
+                        <td class="px-4 py-3 text-slate-800 font-semibold">${tx.desc}</td>
+                        <td class="px-4 py-3 text-right text-emerald-600 font-bold">${isIncome ? '₹' + tx.amount.toFixed(2) : '-'}</td>
+                        <td class="px-4 py-3 text-right text-rose-600 font-bold">${!isIncome ? '₹' + tx.amount.toFixed(2) : '-'}</td>
+                        <td class="px-4 py-3 text-center">
+                            <button onclick="deleteTransaction(${tx.id})" class="text-slate-400 hover:text-rose-600 transition-colors">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            const net = totalIn - totalOut;
+
+            // Animate / Display calculations
+            document.getElementById('totalIncome').innerText = totalIn.toFixed(2);
+            document.getElementById('totalExpense').innerText = totalOut.toFixed(2);
+            document.getElementById('netBalance').innerText = net.toFixed(2);
+            
+            // Change Net Balance color style based on value
+            const netEl = document.getElementById('netBalance').parentElement;
+            if (net < 0) {
+                netEl.className = "text-2xl font-bold text-rose-600";
+            } else {
+                netEl.className = "text-2xl font-bold text-indigo-600";
+            }
+        }
+
+        function formatDate(dateStr) {
+            if(!dateStr) return '';
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+    </script>
+</body>
+</html>
