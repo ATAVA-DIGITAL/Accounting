@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATAVA Accounting Ledger V2 - Customer Insights</title>
+    <title>ATAVA Corporate Ledger V3 - Multi-Company & Employee Tally</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,16 +18,16 @@
 </head>
 <body class="min-h-screen text-slate-800">
 
-    <!-- Header Section -->
+    <!-- Header Section (Dynamic Config) -->
     <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 px-6 py-4 shadow-sm">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-md">
-                    <i class="fa-solid fa-users-gear text-xl"></i>
+                <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-md" id="headerIcon">
+                    <i class="fa-solid fa-building-user text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold text-slate-900 tracking-tight mb-0.5">ATAVA Business Ledger</h1>
-                    <p class="text-xs text-slate-500 font-medium">Advanced Mini Tally with Customer Management</p>
+                    <h1 class="text-xl font-bold text-slate-900 tracking-tight mb-0.5" id="lblCompanyName">ATAVA Business Ledger</h1>
+                    <p class="text-xs text-slate-500 font-medium">Ultimate Multi-Company & Employee Statement Tracker</p>
                 </div>
             </div>
             <div class="text-right hidden sm:block">
@@ -38,19 +38,22 @@
 
     <main class="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
         
-        <!-- Tab Switches -->
-        <div class="flex gap-2 p-1 bg-slate-200/70 rounded-2xl w-fit">
-            <button onclick="switchMainTab('dashboard-view')" id="btn-tab-dash" class="text-sm font-bold py-2.5 px-5 rounded-xl bg-white text-indigo-600 shadow-sm transition-all">
-                <i class="fa-solid fa-chart-line mr-1.5"></i> Accounts & Ledger
+        <!-- Navigation Tabs Controls -->
+        <div class="flex flex-wrap gap-2 p-1 bg-slate-200/70 rounded-2xl w-fit">
+            <button onclick="switchTab('tab-daybook')" id="btn-daybook" class="text-sm font-bold py-2.5 px-5 rounded-xl bg-white text-indigo-600 shadow-sm transition-all">
+                <i class="fa-solid fa-book-bookmark mr-1.5"></i> Voucher & Daybook
             </button>
-            <button onclick="switchMainTab('customer-view')" id="btn-tab-cust" class="text-sm font-bold py-2.5 px-5 rounded-xl text-slate-600 hover:text-slate-900 transition-all">
-                <i class="fa-solid fa-address-book mr-1.5"></i> Customer Directory
+            <button onclick="switchTab('tab-companies')" id="btn-companies" class="text-sm font-bold py-2.5 px-5 rounded-xl text-slate-600 hover:text-slate-900 transition-all">
+                <i class="fa-solid fa-building mr-1.5"></i> Companies & Clients
+            </button>
+            <button onclick="switchTab('tab-config')" id="btn-config" class="text-sm font-bold py-2.5 px-5 rounded-xl text-slate-600 hover:text-slate-900 transition-all">
+                <i class="fa-solid fa-sliders mr-1.5"></i> Profile Settings
             </button>
         </div>
 
-        <!-- VIEW 1: MAIN LEDGER & ACCOUNTS -->
-        <div id="dashboard-view" class="space-y-6">
-            <!-- Status Cards Row -->
+        <!-- TAB 1: DAYBOOK & VOUCHER ENTRY -->
+        <div id="tab-daybook" class="space-y-6">
+            <!-- Summary Status Indicators -->
             <section class="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex items-center justify-between">
                     <div>
@@ -59,77 +62,81 @@
                     </div>
                     <div class="bg-emerald-50 text-emerald-600 p-4 rounded-xl"><i class="fa-solid fa-arrow-trend-up text-xl"></i></div>
                 </div>
-
                 <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-bold uppercase text-slate-400 mb-1">Total Expense (ചെലവ്)</p>
+                        <p class="text-xs font-bold uppercase text-slate-400 mb-1">Total Billed / Paid (ചെലവ്)</p>
                         <h3 class="text-2xl font-bold text-rose-600">₹<span id="totalExpense">0.00</span></h3>
                     </div>
                     <div class="bg-rose-50 text-rose-600 p-4 rounded-xl"><i class="fa-solid fa-arrow-trend-down text-xl"></i></div>
                 </div>
-
                 <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-bold uppercase text-slate-400 mb-1">Cash In Hand (ബാക്കി തുക)</p>
+                        <p class="text-xs font-bold uppercase text-slate-400 mb-1">Net Cash Flow (ബാക്കി തുക)</p>
                         <h3 class="text-2xl font-bold text-indigo-600">₹<span id="netBalance">0.00</span></h3>
                     </div>
                     <div class="bg-indigo-50 text-indigo-600 p-4 rounded-xl"><i class="fa-solid fa-wallet text-xl"></i></div>
                 </div>
             </section>
 
-            <!-- Grid Content -->
+            <!-- Workspace Matrix -->
             <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Transaction Form -->
+                <!-- Data Input Console -->
                 <div class="lg:col-span-4 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4 h-fit">
-                    <h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-square-plus text-indigo-600"></i> Voucher Entry</h2>
-                    <form id="transactionForm" class="space-y-4">
+                    <h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-file-invoice-dollar text-indigo-600"></i> Corporate Voucher</h2>
+                    
+                    <form id="txForm" class="space-y-4">
                         <div>
                             <label class="block text-xs font-semibold text-slate-500 mb-1">Date</label>
-                            <input type="date" id="txDate" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none font-medium">
+                            <input type="date" id="txDate" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-500 mb-1">Transaction Type</label>
                             <div class="grid grid-cols-2 gap-2">
                                 <label class="border border-slate-200 rounded-xl p-2 flex items-center justify-center gap-1.5 cursor-pointer bg-slate-50 has-[:checked]:bg-emerald-50 has-[:checked]:border-emerald-500 font-semibold text-xs text-slate-600 has-[:checked]:text-emerald-700">
-                                    <input type="radio" name="txType" value="income" checked class="accent-emerald-600"> Received (വരവ്)
+                                    <input type="radio" name="txType" value="income" checked class="accent-emerald-600"> Income / Received
                                 </label>
                                 <label class="border border-slate-200 rounded-xl p-2 flex items-center justify-center gap-1.5 cursor-pointer bg-slate-50 has-[:checked]:bg-rose-50 has-[:checked]:border-rose-500 font-semibold text-xs text-slate-600 has-[:checked]:text-rose-700">
-                                    <input type="radio" name="txType" value="expense" class="accent-rose-600"> Paid (ചെലവ്)
+                                    <input type="radio" name="txType" value="expense" class="accent-rose-600"> Bill / Debit Work
                                 </label>
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">Link to Customer (കസ്റ്റമർ)</label>
-                            <select id="txCustomer" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none font-medium text-slate-700">
-                                <option value="general">General Cash Account</option>
-                                <!-- Dynamic Customers Hook -->
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Select Client Company (കമ്പനി)</label>
+                            <select id="txCompany" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium outline-none text-slate-700">
+                                <option value="walkin">Walk-in Counter Cash</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">Particulars / Description</label>
-                            <input type="text" id="txDesc" placeholder="e.g., Online Typing, Visa Entry..." required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none">
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Employee / Passenger Name (ജീവനക്കാരൻ)</label>
+                            <input type="text" id="txEmployee" placeholder="e.g., Subair, Jithin, Aneesh..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">Amount</label>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Service Particulars (വിവരണം)</label>
+                            <input type="text" id="txDesc" placeholder="e.g., Visa Typing, Emirates ID, Medical..." required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Transaction Value (തുക)</label>
                             <input type="number" id="txAmount" min="0.01" step="0.01" placeholder="0.00" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none">
                         </div>
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl text-sm shadow-md transition-all">Save Voucher</button>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl text-sm shadow-md transition-all">Record Transaction</button>
                     </form>
                 </div>
 
-                <!-- Ledger Table -->
-                <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-base font-bold text-slate-800"><i class="fa-solid fa-book text-indigo-600 mr-1.5"></i> Day Book Ledger</h2>
-                        <button onclick="clearAllTransactions()" class="text-xs font-bold text-rose-500 bg-rose-50 px-3 py-1.5 rounded-lg">Reset Daybook</button>
+                <!-- Ledger Registry Display -->
+                <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col space-y-4">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                        <h2 class="text-base font-bold text-slate-800"><i class="fa-solid fa-list-ol text-indigo-600 mr-1.5"></i> Enterprise Ledger Log</h2>
+                        <input type="text" id="ledgerSearch" oninput="renderApp()" placeholder="🔍 Search Company / Employee / Service..." class="w-full sm:w-64 px-3 py-1.5 border border-slate-200 rounded-xl text-xs outline-none">
                     </div>
+                    
                     <div class="overflow-x-auto border border-slate-100 rounded-xl flex-1">
                         <table class="w-full text-left text-sm">
                             <thead class="bg-slate-50 text-slate-500 text-xs border-b border-slate-100 font-semibold">
                                 <tr>
                                     <th class="px-4 py-3">Date</th>
-                                    <th class="px-4 py-3">Party Name</th>
-                                    <th class="px-4 py-3">Particulars</th>
+                                    <th class="px-4 py-3">Company Accounts</th>
+                                    <th class="px-4 py-3">Employee Name</th>
+                                    <th class="px-4 py-3">Service Details</th>
                                     <th class="px-4 py-3 text-right">In (₹)</th>
                                     <th class="px-4 py-3 text-right">Out (₹)</th>
                                     <th class="px-4 py-3 text-center">Action</th>
@@ -142,97 +149,125 @@
             </section>
         </div>
 
-        <!-- VIEW 2: CUSTOMER MANAGEMENT DIRECTORY -->
-        <div id="customer-view" class="space-y-6 hidden">
+        <!-- TAB 2: COMPANY LIST MANAGEMENT -->
+        <div id="tab-companies" class="space-y-6 hidden">
             <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Add Customer Form -->
+                <!-- Add Corporate Profile -->
                 <div class="lg:col-span-4 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4 h-fit">
-                    <h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-user-plus text-indigo-600"></i> Register New Customer</h2>
-                    <form id="customerForm" class="space-y-4">
+                    <h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-building-circle-plus text-indigo-600"></i> Corporate Registry</h2>
+                    
+                    <form id="companyForm" class="space-y-4">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">Customer Full Name</label>
-                            <input type="text" id="custName" placeholder="Customer Name" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none font-medium">
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Company Registered Name</label>
+                            <input type="text" id="compName" placeholder="e.g., Al Marhaba Document Clearing" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none font-medium">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">Phone Number</label>
-                            <input type="tel" id="custPhone" placeholder="Mobile / WhatsApp" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none">
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Corporate Contact Phone</label>
+                            <input type="tel" id="compPhone" placeholder="Mobile / WhatsApp" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">Opening Due Balance (പഴയ കടം ഉണ്ടെങ്കിൽ)</label>
-                            <input type="number" id="custOpening" min="0" placeholder="0.00" value="0" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold outline-none">
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Opening Debt Balance (പഴയ കുടിശ്ശിക)</label>
+                            <input type="number" id="compOpening" min="0" value="0" placeholder="0.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold outline-none">
                         </div>
-                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl text-sm shadow-md transition-all">Add Customer Account</button>
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl text-sm shadow-md transition-all">Add Company Profile</button>
                     </form>
                 </div>
 
-                <!-- Customer list and balances -->
+                <!-- Companies Audit Summary -->
                 <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col">
-                    <h2 class="text-base font-bold text-slate-800 mb-4"><i class="fa-solid fa-address-card text-indigo-600 mr-1.5"></i> Party Accounts & Outstanding Dues</h2>
+                    <h2 class="text-base font-bold text-slate-800 mb-4"><i class="fa-solid fa-chart-gantt text-indigo-600 mr-1.5"></i> Corporate Financial Balances</h2>
                     <div class="overflow-x-auto border border-slate-100 rounded-xl flex-1">
                         <table class="w-full text-left text-sm">
                             <thead class="bg-slate-50 text-slate-500 text-xs border-b border-slate-100 font-semibold">
                                 <tr>
-                                    <th class="px-4 py-3">Customer Name</th>
-                                    <th class="px-4 py-3">Phone</th>
-                                    <th class="px-4 py-3 text-right">Total Business</th>
-                                    <th class="px-4 py-3 text-right text-rose-600">Pending Dues (ബാക്കി)</th>
+                                    <th class="px-4 py-3">Company Name</th>
+                                    <th class="px-4 py-3">Phone Line</th>
+                                    <th class="px-4 py-3 text-right">Paid to us</th>
+                                    <th class="px-4 py-3 text-right text-rose-600">Outstanding Dues (ബാക്കി)</th>
                                     <th class="px-4 py-3 text-center">Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="customerTableBody" class="divide-y divide-slate-100 font-medium text-slate-700"></tbody>
+                            <tbody id="companyTableBody" class="divide-y divide-slate-100 font-medium text-slate-700"></tbody>
                         </table>
                     </div>
                 </div>
             </section>
         </div>
 
-        <!-- Footer -->
+        <!-- TAB 3: APP PERSONALIZATION CONFIGURATION -->
+        <div id="tab-config" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm max-w-xl mx-auto space-y-4 hidden">
+            <h2 class="text-base font-bold text-slate-800"><i class="fa-solid fa-palette text-indigo-600 mr-1.5"></i> Custom Link Identity Settings</h2>
+            <p class="text-xs text-slate-500 leading-relaxed">ഈ ലിങ്ക് വ്യത്യസ്ത കമ്പനികൾക്ക് അയച്ചു കൊടുക്കുമ്പോൾ അവരുടെ പേര് മുകളിൽ കാണിക്കാൻ വേണ്ടി ഇവിടെ മാറ്റം വരുത്താം.</p>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Display App Dashboard Title</label>
+                    <input type="text" id="cfgAppName" value="ATAVA Business Ledger" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none font-bold">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Dashboard Header Theme Icon</label>
+                    <select id="cfgIcon" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none font-medium">
+                        <option value="fa-building-user">🏢 Corporate Business Profile</option>
+                        <option value="fa-chart-pie">📊 Audit Chart Dashboard</option>
+                        <option value="fa-wallet">💼 Document Clearing Desk</option>
+                    </select>
+                </div>
+                <button onclick="saveGlobalConfigurations()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2.5 rounded-xl text-sm transition-all shadow-md">Apply Profile Settings</button>
+            </div>
+        </div>
+
+        <!-- System Footer Banner -->
         <footer class="bg-slate-900 text-slate-400 text-center py-4 px-6 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shadow-md">
-            <div>Developed & Powered by <strong class="text-white tracking-wide">ATAVA DIGITAL SERVICES & TRADING</strong></div>
-            <div class="text-indigo-400 font-semibold"><i class="fa-solid fa-shield-halved mr-1"></i> Client Ledgers Enabled</div>
+            <div>Engine Developed & Powered by <strong class="text-white tracking-wide">ATAVA DIGITAL SERVICES & TRADING</strong></div>
+            <div class="text-indigo-400 font-semibold"><i class="fa-solid fa-server mr-1"></i> Multi-Tenant Employee Ledgers Active</div>
         </footer>
     </main>
 
     <script>
-        // Database Core State (Local Storage Sync)
-        let transactions = JSON.parse(localStorage.getItem('atava_transactions_v2')) || [];
-        let customers = JSON.parse(localStorage.getItem('atava_customers_v2')) || [];
+        // Data Store Collections
+        let transactions = JSON.parse(localStorage.getItem('atava_v3_transactions')) || [];
+        let companies = JSON.parse(localStorage.getItem('atava_v3_companies')) || [];
+        let appConfig = JSON.parse(localStorage.getItem('atava_v3_config')) || { name: "ATAVA Business Ledger", icon: "fa-building-user" };
 
         window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('txDate').valueAsDate = new Date();
             setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleString(); }, 1000);
 
-            // Listeners
-            document.getElementById('transactionForm').addEventListener('submit', handleTransactionSubmit);
-            document.getElementById('customerForm').addEventListener('submit', handleCustomerSubmit);
+            // Form Submit Listeners
+            document.getElementById('txForm').addEventListener('submit', handleTransactionSubmit);
+            document.getElementById('companyForm').addEventListener('submit', handleCompanySubmit);
 
-            // Initial Build
-            rebuildCustomerDropdown();
+            applyGlobalConfigurations();
+            rebuildCompanyDropdown();
             renderApp();
         });
 
-        function switchMainTab(viewId) {
-            const isDash = viewId === 'dashboard-view';
-            document.getElementById('dashboard-view').classList.toggle('hidden', !isDash);
-            document.getElementById('customer-view').classList.toggle('hidden', isDash);
+        function switchTab(targetTabId) {
+            ['tab-daybook', 'tab-companies', 'tab-config'].forEach(id => {
+                document.getElementById(id).classList.toggle('hidden', id !== targetTabId);
+            });
 
-            document.getElementById('btn-tab-dash').className = isDash ? "text-sm font-bold py-2.5 px-5 rounded-xl bg-white text-indigo-600 shadow-sm transition-all" : "text-sm font-bold py-2.5 px-5 rounded-xl text-slate-600 hover:text-slate-900 transition-all";
-            document.getElementById('btn-tab-cust').className = !isDash ? "text-sm font-bold py-2.5 px-5 rounded-xl bg-white text-emerald-600 shadow-sm transition-all" : "text-sm font-bold py-2.5 px-5 rounded-xl text-slate-600 hover:text-slate-900 transition-all";
+            // Handle Tab Buttons Styling
+            const isDb = targetTabId === 'tab-daybook';
+            const isCp = targetTabId === 'tab-companies';
+            const isCf = targetTabId === 'tab-config';
+
+            document.getElementById('btn-daybook').className = isDb ? "text-sm font-bold py-2.5 px-5 rounded-xl bg-white text-indigo-600 shadow-sm transition-all" : "text-sm font-bold py-2.5 px-5 rounded-xl text-slate-600 hover:text-slate-900 transition-all";
+            document.getElementById('btn-companies').className = isCp ? "text-sm font-bold py-2.5 px-5 rounded-xl bg-white text-emerald-600 shadow-sm transition-all" : "text-sm font-bold py-2.5 px-5 rounded-xl text-slate-600 hover:text-slate-900 transition-all";
+            document.getElementById('btn-config').className = isCf ? "text-sm font-bold py-2.5 px-5 rounded-xl bg-white text-slate-900 shadow-sm transition-all" : "text-sm font-bold py-2.5 px-5 rounded-xl text-slate-600 hover:text-slate-900 transition-all";
         }
 
-        function handleCustomerSubmit(e) {
+        function handleCompanySubmit(e) {
             e.preventDefault();
-            const name = document.getElementById('custName').value.trim();
-            const phone = document.getElementById('custPhone').value.trim() || 'N/A';
-            const opening = parseFloat(document.getElementById('custOpening').value) || 0;
+            const name = document.getElementById('compName').value.trim();
+            const phone = document.getElementById('compPhone').value.trim() || 'N/A';
+            const opening = parseFloat(document.getElementById('compOpening').value) || 0;
 
-            const newCust = { id: 'cust_' + Date.now(), name, phone, opening };
-            customers.push(newCust);
+            companies.push({ id: 'comp_' + Date.now(), name, phone, opening });
+            localStorage.setItem('atava_v3_companies', JSON.stringify(companies));
             
-            localStorage.setItem('atava_customers_v2', JSON.stringify(customers));
-            document.getElementById('customerForm').reset();
-            
-            rebuildCustomerDropdown();
+            document.getElementById('companyForm').reset();
+            rebuildCompanyDropdown();
             renderApp();
         }
 
@@ -240,126 +275,134 @@
             e.preventDefault();
             const date = document.getElementById('txDate').value;
             const type = document.querySelector('input[name="txType"]:checked').value;
-            const customerId = document.getElementById('txCustomer').value;
+            const companyId = document.getElementById('txCompany').value;
+            const employee = document.getElementById('txEmployee').value.trim() || 'N/A';
             const desc = document.getElementById('txDesc').value.trim();
             const amount = parseFloat(document.getElementById('txAmount').value);
 
-            const newTx = { id: Date.now(), date, type, customerId, desc, amount };
-            transactions.unshift(newTx);
+            transactions.unshift({ id: Date.now(), date, type, companyId, employee, desc, amount });
+            localStorage.setItem('atava_v3_transactions', JSON.stringify(transactions));
 
-            localStorage.setItem('atava_transactions_v2', JSON.stringify(transactions));
+            document.getElementById('txEmployee').value = '';
             document.getElementById('txDesc').value = '';
             document.getElementById('txAmount').value = '';
-
             renderApp();
         }
 
         function deleteTransaction(id) {
             transactions = transactions.filter(t => t.id !== id);
-            localStorage.setItem('atava_transactions_v2', JSON.stringify(transactions));
+            localStorage.setItem('atava_v3_transactions', JSON.stringify(transactions));
             renderApp();
         }
 
-        function deleteCustomer(id) {
-            if(confirm("ഈ കസ്റ്റമറെ മാറ്റണോ? ഇവരുമായി ലിങ്ക് ചെയ്ത പഴയ എൻട്രികൾ 'General Cash' ആയി മാറും.")) {
-                customers = customers.filter(c => c.id !== id);
-                transactions.forEach(t => { if(t.customerId === id) t.customerId = 'general'; });
-                localStorage.setItem('atava_customers_v2', JSON.stringify(customers));
-                localStorage.setItem('atava_transactions_v2', JSON.stringify(transactions));
-                rebuildCustomerDropdown();
+        function deleteCompany(id) {
+            if(confirm("ഈ കമ്പനി പ്രൊഫൈൽ മാറ്റണമോ? പഴയ കൊടുക്കൽ വാങ്ങലുകൾ എല്ലാം 'Walk-in Counter Cash' അക്കൗണ്ടിലേക്ക് മാറും.")) {
+                companies = companies.filter(c => c.id !== id);
+                transactions.forEach(t => { if(t.companyId === id) t.companyId = 'walkin'; });
+                localStorage.setItem('atava_v3_companies', JSON.stringify(companies));
+                localStorage.setItem('atava_v3_transactions', JSON.stringify(transactions));
+                rebuildCompanyDropdown();
                 renderApp();
             }
         }
 
-        function clearAllTransactions() {
-            if(confirm("ഡേ ബുക്കിലെ മുഴുവൻ റെക്കോർഡുകളും ഇല്ലാതാക്കണോ?")) {
-                transactions = [];
-                localStorage.setItem('atava_transactions_v2', JSON.stringify(transactions));
-                renderApp();
-            }
-        }
-
-        function rebuildCustomerDropdown() {
-            const dropdown = document.getElementById('txCustomer');
-            dropdown.innerHTML = '<option value="general">General Cash Account</option>';
-            customers.forEach(c => {
+        function rebuildCompanyDropdown() {
+            const dropdown = document.getElementById('txCompany');
+            dropdown.innerHTML = '<option value="walkin">Walk-in Counter Cash (General)</option>';
+            companies.forEach(c => {
                 dropdown.innerHTML += `<option value="${c.id}">${c.name}</option>`;
             });
+        }
+
+        function saveGlobalConfigurations() {
+            appConfig.name = document.getElementById('cfgAppName').value.trim() || "ATAVA Business Ledger";
+            appConfig.icon = document.getElementById('cfgIcon').value;
+            localStorage.setItem('atava_v3_config', JSON.stringify(appConfig));
+            applyGlobalConfigurations();
+            alert("ഡാഷ്‌ബോർഡ് പ്രൊഫൈൽ വിവരങ്ങൾ അപ്‌ഡേറ്റ് ചെയ്തു!");
+        }
+
+        function applyGlobalConfigurations() {
+            document.getElementById('lblCompanyName').innerText = appConfig.name;
+            document.getElementById('headerIcon').innerHTML = `<i class="fa-solid ${appConfig.icon} text-xl"></i>`;
+            document.getElementById('cfgAppName').value = appConfig.name;
+            document.getElementById('cfgIcon').value = appConfig.icon;
         }
 
         function renderApp() {
             let totalIn = 0;
             let totalOut = 0;
+            const searchKey = document.getElementById('ledgerSearch').value.toLowerCase();
 
-            // 1. Process Day Book Table
             const ledgerBody = document.getElementById('ledgerBody');
             ledgerBody.innerHTML = '';
 
-            if (transactions.length === 0) {
-                ledgerBody.innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400 italic">No business records found for today.</td></tr>`;
-            } else {
-                transactions.forEach(t => {
-                    const isInc = t.type === 'income';
-                    if (isInc) totalIn += t.amount; else totalOut += t.amount;
+            // Filter ledger views based on query search
+            const filteredTx = transactions.filter(t => {
+                const compName = t.companyId === 'walkin' ? 'walk-in counter cash' : (companies.find(c => c.id === t.companyId)?.name || '').toLowerCase();
+                return compName.includes(searchKey) || 
+                       t.employee.toLowerCase().includes(searchKey) || 
+                       t.desc.toLowerCase().includes(searchKey);
+            });
 
-                    const partyName = t.customerId === 'general' ? 'Cash Sale' : (customers.find(c => c.id === t.customerId)?.name || 'Unknown Party');
-                    
+            transactions.forEach(t => {
+                if (t.type === 'income') totalIn += t.amount; else totalOut += t.amount;
+            });
+
+            if (filteredTx.length === 0) {
+                ledgerBody.innerHTML = `<tr><td colspan="7" class="px-4 py-8 text-center text-slate-400 italic">No matching statement matching search keyword.</td></tr>`;
+            } else {
+                filteredTx.forEach(t => {
+                    const isInc = t.type === 'income';
+                    const targetCompName = t.companyId === 'walkin' ? 'Walk-in Cash' : (companies.find(c => c.id === t.companyId)?.name || 'Unknown Corporate');
+
                     ledgerBody.innerHTML += `
-                        <tr class="hover:bg-slate-50/50 transition-colors">
-                            <td class="px-4 py-2.5 text-xs text-slate-500">${new Date(t.date).toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</td>
-                            <td class="px-4 py-2.5 font-semibold text-slate-900">${partyName}</td>
-                            <td class="px-4 py-2.5 text-slate-600">${t.desc}</td>
-                            <td class="px-4 py-2.5 text-right text-emerald-600 font-bold">${isInc ? '₹'+t.amount.toFixed(2) : '-'}</td>
-                            <td class="px-4 py-2.5 text-right text-rose-600 font-bold">${!isInc ? '₹'+t.amount.toFixed(2) : '-'}</td>
-                            <td class="px-4 py-2.5 text-center">
-                                <button onclick="deleteTransaction(${t.id})" class="text-slate-300 hover:text-rose-500"><i class="fa-regular fa-trash-can"></i></button>
+                        <tr class="hover:bg-slate-50/50 transition-colors text-xs sm:text-sm">
+                            <td class="px-4 py-3 text-slate-400 text-xs">${new Date(t.date).toLocaleDateString('en-GB', {day:'2-digit', month:'short'})}</td>
+                            <td class="px-4 py-3 font-bold text-slate-900">${targetCompName}</td>
+                            <td class="px-4 py-3 font-semibold text-slate-700 bg-slate-50/60">${t.employee}</td>
+                            <td class="px-4 py-3 text-slate-500">${t.desc}</td>
+                            <td class="px-4 py-3 text-right text-emerald-600 font-bold">${isInc ? '₹'+t.amount.toFixed(2) : '-'}</td>
+                            <td class="px-4 py-3 text-right text-rose-600 font-bold">${!isInc ? '₹'+t.amount.toFixed(2) : '-'}</td>
+                            <td class="px-4 py-3 text-center">
+                                <button onclick="deleteTransaction(${t.id})" class="text-slate-300 hover:text-rose-600"><i class="fa-regular fa-trash-can"></i></button>
                             </td>
                         </tr>
                     `;
                 });
             }
 
-            // Top Summary Cards Calculation
             document.getElementById('totalIncome').innerText = totalIn.toFixed(2);
             document.getElementById('totalExpense').innerText = totalOut.toFixed(2);
             document.getElementById('netBalance').innerText = (totalIn - totalOut).toFixed(2);
 
-            // 2. Compute and Process Customer Ledger Balances
-            const custBody = document.getElementById('customerTableBody');
-            custBody.innerHTML = '';
+            // Calculate Company Balances Table
+            const compBody = document.getElementById('companyTableBody');
+            compBody.innerHTML = '';
 
-            if (customers.length === 0) {
-                custBody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-slate-400 italic">No customers registered yet.</td></tr>`;
+            if (companies.length === 0) {
+                compBody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-slate-400 italic">No client companies tracked yet.</td></tr>`;
             } else {
-                customers.forEach(c => {
-                    // Filter transactions specifically for this registered user
-                    const partyTx = transactions.filter(t => t.customerId === c.id);
-                    
-                    let businessVolume = 0;
-                    let paidAmount = 0;
+                companies.forEach(c => {
+                    const partyTx = transactions.filter(t => t.companyId === c.id);
+                    let billedAmount = 0;
+                    let settledAmount = 0;
 
                     partyTx.forEach(t => {
-                        if(t.type === 'income') {
-                            paidAmount += t.amount; // Customer paid us cash
-                        } else {
-                            businessVolume += t.amount; // We paid for them or billed expense
-                        }
+                        if(t.type === 'income') settledAmount += t.amount; // They paid us
+                        else billedAmount += t.amount; // Billed for their employee
                     });
 
-                    // Due Logic: Opening Old Dues + Business Done - Total Amount they paid us
-                    // For simplified counter service billing: Let's assume description entries as core billing log
-                    // If you select 'Expense' with a customer name, it means you spent money/billed work for them.
-                    // If you select 'Income' with a customer name, it means they gave you cash.
-                    const currentOutstanding = c.opening - paidAmount + businessVolume;
+                    const balanceDue = c.opening + billedAmount - settledAmount;
 
-                    custBody.innerHTML += `
+                    compBody.innerHTML += `
                         <tr class="hover:bg-slate-50/50 transition-colors">
                             <td class="px-4 py-3 font-bold text-slate-800">${c.name}</td>
-                            <td class="px-4 py-3 text-xs text-slate-500 font-semibold"><i class="fa-solid fa-phone text-slate-400 mr-1"></i>${c.phone}</td>
-                            <td class="px-4 py-3 text-right font-medium text-slate-600">₹${paidAmount.toFixed(2)}</td>
-                            <td class="px-4 py-3 text-right font-bold ${currentOutstanding > 0 ? 'text-rose-600' : 'text-emerald-600'}">₹${currentOutstanding.toFixed(2)}</td>
+                            <td class="px-4 py-3 text-xs text-slate-500"><i class="fa-solid fa-phone text-slate-300 mr-1"></i>${c.phone}</td>
+                            <td class="px-4 py-3 text-right font-medium text-slate-600">₹${settledAmount.toFixed(2)}</td>
+                            <td class="px-4 py-3 text-right font-bold ${balanceDue > 0 ? 'text-rose-600' : 'text-emerald-600'}">₹${balanceDue.toFixed(2)}</td>
                             <td class="px-4 py-3 text-center">
-                                <button onclick="deleteCustomer('${c.id}')" class="text-slate-300 hover:text-rose-600"><i class="fa-solid fa-user-minus"></i></button>
+                                <button onclick="deleteCompany('${c.id}')" class="text-slate-200 hover:text-rose-500"><i class="fa-solid fa-trash-can"></i></button>
                             </td>
                         </tr>
                     `;
